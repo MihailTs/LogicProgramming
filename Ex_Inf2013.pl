@@ -31,6 +31,4 @@ nat_six(X, Y, Z, U, V, W) :-
     			 between(0, K2, Z), K3 is K2 - Z,
 				 between(0, K3, U), K4 is K3 - U,
 				 between(0, K4, V), W is K4 - V.
-
-% ЗАДАЧА ЗА МАЛОУМНИЦИ!
     			
