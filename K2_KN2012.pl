@@ -5,7 +5,6 @@
 % Произведението на X и Y (X * Y),
 % Сумата на X и Y (X + Y), са елементи на списъка L.
 
-% subset(L, S) - ��� ������� ������ L �������� � S ������������ �� L
 subset([], []).
 subset([X|L], [X|S]) :- subset(L, S).
 subset([_|L], S) :- subset(L, S).
@@ -20,9 +19,6 @@ remove_duplicates([H|L], R) :- my_member(H, L),
                                remove_duplicates(L, R).
 
 dup_subset(L, S) :- remove_duplicates(S, T), subset(L, T).
-
-% member(X, L) - ��� ������� ������ L �������� � X ������ �������� �� L
-%                                                        (X �� � ������)
 
 p(_, []).
 p(L, M) :-  subset(L, M),
