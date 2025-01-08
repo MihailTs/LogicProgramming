@@ -95,7 +95,6 @@ c([X|L1], L2, [Xc|L3]) :- compose_help(X, L2, Xc), c(L1, L2, L3).
 % който по даден списък от списъци L разпознава 
 % дали L може да се разбие на два списъка, които имат едно и също обединение.
 
-insert(X, [], [X]).
 insert(X, L, [X|L]).
 insert(X, [H|L], [H|R]) :- insert(X, L, R).
 
@@ -118,11 +117,11 @@ p2(L) :- break(L, A, B), flatten(A, Af), flatten(B, Bf),
 % но не всички елементи на l2 са елементи на l1. 
 % Внимание: [[0], [1]] не може да се сортира по <_.
 
-subset(L, S) :- subsequence(L, S1), permutation(S1, S).
+list_subset(L, S) :- subsequence(L, S1), permutation(S1, S).
 
 is_sorted_acc_subset([]).
 is_sorted_acc_subset([_]).
-is_sorted_acc_subset([A,B|L]) :- subset(B, A), 
+is_sorted_acc_subset([A,B|L]) :- list_subset(B, A), 
     							 is_sorted_acc_subset([B|L]).
 
 p3(L) :- permutation(L, P),
@@ -183,4 +182,46 @@ empty_lists([[]|L]) :- empty_lists(L).
 t(M, []) :- empty_lists(M).
 t(M, [Fs|T]) :- list_of_heads(M, Fs), 
     		    remove_heads(M, M1),
-    			t(M1, T).    
+    			t(M1, T).
+
+
+% Ако E е списък от ориентирания граф, в който няма изолирани върхове 
+% и от върха u към върха v има ребро, то това казва, 
+% че [u, v] е елемент на списъка E. Да се дефинира пролог предикат 
+% p(E, n, u, v), който, подаден със списъка от двуелементни списъци E, 
+% естествено числени върхове u и v от графа G(E), проверява 
+% дали в G(E) има път от u до v с дължина не по-голяма от n.
+
+vertices([], []).
+vertices([[A,B]|E], [A,B|V]) :- vertices(E, V), not(member(A, V)), not(member(B,V)).
+vertices([[A,B]|E], [A|V]) :- vertices(E, V), not(member(A, V)), member(B,V).
+vertices([[A,B]|E], [B|V]) :- vertices(E, V), member(A, V), not(member(B,V)).
+vertices([[A,B]|E], V) :- vertices(E, V), member(A, V), member(B,V).
+
+is_last(X, [X]).
+is_last(X, [_|T]) :- is_last(X, T).
+
+is_path(_, []).
+is_path(E, X) :- vertices(E, V), member(X, V).
+is_path(E, [A,B|P]) :- member([A,B], E), is_path(E, [B|P]).
+
+p(E, N, U, V) :- vertices(E, Vert), list_subset(Vert, [U|P]),
+    			 list_length([U|P], M), N1 is N + 1, M =< N1,
+    			 is_last(V, [U|P]), is_path(E, [U|P]).
+
+
+% Да се напише предикат на Пролог, който по подадени две цели числа разпознава
+% дали те имат едни и същи прости делители
+
+same_divisors(N, M) :- not((between(2, N, K), is_prime(K), 
+                           	((0 is N mod K, not(0 is M mod K));
+                            not(0 is N mod K), 0 is M mod K)
+                           )).
+
+% Да се напише на Пролог генератор kleene_star(S, W), който по подадена азбука S
+% генерира в W всички думи от S
+
+words(S, 0, []).
+words(S, N, [X|W]) :- N > 0, N1 is N - 1, words(S, N1, W), member(X, S).
+
+kleene_star(S, W) :- nat(N), words(S, N, W).
