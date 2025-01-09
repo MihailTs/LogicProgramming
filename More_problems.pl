@@ -225,3 +225,24 @@ words(S, 0, []).
 words(S, N, [X|W]) :- N > 0, N1 is N - 1, words(S, N1, W), member(X, S).
 
 kleene_star(S, W) :- nat(N), words(S, N, W).
+
+% Безкрайна редица an n N от нули и единици наричаме периодична, ако:
+% има естествено число d > 0, за което a_n+d = a_n за всяко ест. ч. n.
+% Да се дефинира на пролог предикат aperiodic(X), който при преудово
+% летворяване генерира в X нула и едно, така че генерираната безкрайна
+% редица от нули и единици an n N не е периодична.
+% Има различни редици, които удовлетворяват условието, достатъч
+% но е предикатът aperiodic(X) да генерира една такава.
+
+% ще генерираме 0110000111111110000000000000000...
+
+max_2_power_lte(1, 0).
+max_2_power_lte(N, K) :- between(1,N,K), K1 is 2^K, K1 =< N,
+    					 not((between(0, N, M), M > K,
+                              M1 is 2^M, M1 =< N)).
+
+aperiodic_helper(0, 1).
+aperiodic_helper(0, N) :- N > 1, max_2_power_lte(N, P), 0 is P mod 2.
+aperiodic_helper(1, N) :- N > 1, max_2_power_lte(N, P), 1 is P mod 2.
+
+aperiodic(X) :- nat(N), aperiodic_helper(X, N).
