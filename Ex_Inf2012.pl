@@ -1,3 +1,26 @@
+% Да се дефинира на Пролог двуместен предикат p, който по даден списък L
+% от списъци генерира в M най-дългата обща подредица на елементите на L.
+
+member(H, [H|_]).
+member(H, [_|T]) :- member(H, T).
+
+subsequence([], []).
+subsequence([X|L], [X|R]) :- subsequence(L, R).
+subsequence([_|L], R) :- subsequence(L, R).
+
+list_length([], 0).
+list_length([_|L], N) :- list_length(L, N1), N is N1 + 1.
+
+p(L, M) :- member(A, L),
+    	   subsequence(A, M), list_length(M, N),
+    	   not((member(B, L), not(subsequence(B, M)))),
+    	   not((member(A1, L),
+    	   		subsequence(A1, M1), list_length(M1, N1),
+    	   		not((member(B1, L), not(subsequence(B1, M1)))),
+                N1 > N
+              )).
+
+
 % Нека L е списък, който има следния вид:
 % [ [x1, y1], [x2, y2], …, [xn, yn] ].
 % Ще казваме, че L представлява бинарната релация R, ако:
