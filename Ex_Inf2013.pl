@@ -20,15 +20,19 @@ p(N, M) :- nat_tri(M, A, B), M \= 0, 0 is (N mod M),
      	   M is P1 + P2.
     		
 
-% Да се дефинира на пролог предикат p(A), 
-% който при преудовлетворяване генерира в A 
-% всички рационални числа, които са сума 
+% Да се дефинира на пролог предикат p(A), който при преудовлетворяване 
+% генерира в A всички рационални числа, които са сума 
 % от квадратите на три рационални числа.
 
-nat_six(X, Y, Z, U, V, W) :- 
-    			 nat(K), between(0, K, X), K1 is K - X,
-    			 between(0, K1, Y), K2 is K1 - Y,
-    			 between(0, K2, Z), K3 is K2 - Z,
-				 between(0, K3, U), K4 is K3 - U,
-				 between(0, K4, V), W is K4 - V.
-    			
+nat(0).
+nat(N) :- nat(N1), N is N1 + 1.
+
+nat_pair(A, B) :- nat(K), between(0, K, A), B is K - A, B > 0.
+
+gcd(A, 0, A) :- A > 0.
+gcd(A, B, G) :- B > 0, R is A mod B, gcd(B, R, G).
+
+coprime(A, B) :- gcd(A, B, 1).
+
+% биекция N -> Q
+nat_to_rat(N, [A, B]) :-    
